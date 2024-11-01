@@ -1,6 +1,6 @@
 import { PolynomialRegression } from "ml-regression-polynomial";
 import data from "./data.json";
-const degree = 9; // setup the maximum degree of the polynomial
+const degree = 5; // setup the maximum degree of the polynomial
 
 // const regression = new PolynomialRegression(x, y, degree);
 // console.log(regression.predict(80)); // Apply the model to some x value. Prints 2.6.
@@ -203,4 +203,32 @@ export function getAgeReference(age: number, gender: "boy" | "girl") {
   };
 
   return reference;
+}
+
+export function getRegressions(gender: "boy" | "girl") {
+  const shortness = new PolynomialRegression(
+    data.ages,
+    data[gender].height.shortness,
+    degree
+  );
+  const severeShortness = new PolynomialRegression(
+    data.ages,
+    data[gender].height.severe_shortness,
+    degree
+  );
+  const shortnessFirstDegree = new PolynomialRegression(
+    data.ages,
+    data[gender].height.shortness_first_degree,
+    degree
+  );
+  const tallness = new PolynomialRegression(
+    data.ages,
+    data[gender].height.tallness,
+    degree
+  );
+  const giantism = new PolynomialRegression(
+    data.ages,
+    data[gender].height.giantism,
+    degree
+  );
 }

@@ -1,0 +1,297 @@
+---
+import Layout from "../_components/layout.astro";
+import { getAgeReference } from "../lib/equations";
+
+// Generate data points for the charts
+const agePoints = Array.from({ length: 169 }, (_, i) => (i + 60) / 12); // 5 to 19 years in months
+
+const boysData = agePoints.map(age => getAgeReference(age, "boy"));
+const girlsData = agePoints.map(age => getAgeReference(age, "girl"));
+---
+
+<Layout title="Growth Charts">
+  <div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-8 text-center">Growth Charts</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Boys BMI Chart -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4">Boys BMI Chart</h2>
+        <canvas id="boysBMIChart" class="w-full"></canvas>
+      </div>
+
+      <!-- Girls BMI Chart -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4">Girls BMI Chart</h2>
+        <canvas id="girlsBMIChart" class="w-full"></canvas>
+      </div>
+
+      <!-- Boys Height Chart -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4">Boys Height Chart</h2>
+        <canvas id="boysHeightChart" class="w-full"></canvas>
+      </div>
+
+      <!-- Girls Height Chart -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4">Girls Height Chart</h2>
+        <canvas id="girlsHeightChart" class="w-full"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script define:vars={{ serverBoysData: boysData, serverGirlsData: girlsData }}>
+    // Load Chart.js from CDN
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+    script.onload = () => {
+      // Convert age points to years for labels
+      const labels = Array.from({ length: 169 }, (_, i) => (i / 12).toFixed(1));
+      
+      // Use the server-provided data
+      const boysData = serverBoysData;
+      const girlsData = serverGirlsData;
+
+      // Boys BMI Chart
+      new Chart(document.getElementById('boysBMIChart'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Obese',
+              data: boysData.map(d => d.bmi.more_than.obese),
+              borderColor: 'rgb(255, 99, 132)',
+              fill: false
+            },
+            {
+              label: 'Overweight',
+              data: boysData.map(d => d.bmi.more_than.overweight),
+              borderColor: 'rgb(255, 159, 64)',
+              fill: false
+            },
+            {
+              label: 'Thinness',
+              data: boysData.map(d => d.bmi.less_than.thinness),
+              borderColor: 'rgb(75, 192, 192)',
+              fill: false
+            },
+            {
+              label: 'Severe Thinness',
+              data: boysData.map(d => d.bmi.less_than.severe_thinness),
+              borderColor: 'rgb(54, 162, 235)',
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Boys BMI by Age'
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Age (years)'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'BMI'
+              }
+            }
+          }
+        }
+      });
+
+      // Girls BMI Chart
+      new Chart(document.getElementById('girlsBMIChart'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Obese',
+              data: girlsData.map(d => d.bmi.more_than.obese),
+              borderColor: 'rgb(255, 99, 132)',
+              fill: false
+            },
+            {
+              label: 'Overweight',
+              data: girlsData.map(d => d.bmi.more_than.overweight),
+              borderColor: 'rgb(255, 159, 64)',
+              fill: false
+            },
+            {
+              label: 'Thinness',
+              data: girlsData.map(d => d.bmi.less_than.thinness),
+              borderColor: 'rgb(75, 192, 192)',
+              fill: false
+            },
+            {
+              label: 'Severe Thinness',
+              data: girlsData.map(d => d.bmi.less_than.severe_thinness),
+              borderColor: 'rgb(54, 162, 235)',
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Girls BMI by Age'
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Age (years)'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'BMI'
+              }
+            }
+          }
+        }
+      });
+
+      // Boys Height Chart
+      new Chart(document.getElementById('boysHeightChart'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Giantism',
+              data: boysData.map(d => d.height.more_than.giantism),
+              borderColor: 'rgb(255, 99, 132)',
+              fill: false
+            },
+            {
+              label: 'Tallness',
+              data: boysData.map(d => d.height.more_than.tallness),
+              borderColor: 'rgb(255, 159, 64)',
+              fill: false
+            },
+            {
+              label: 'Shortness (1st degree)',
+              data: boysData.map(d => d.height.less_than.shortness_first_degree),
+              borderColor: 'rgb(75, 192, 192)',
+              fill: false
+            },
+            {
+              label: 'Shortness',
+              data: boysData.map(d => d.height.less_than.shortness),
+              borderColor: 'rgb(54, 162, 235)',
+              fill: false
+            },
+            {
+              label: 'Severe Shortness',
+              data: boysData.map(d => d.height.less_than.severe_shortness),
+              borderColor: 'rgb(153, 102, 255)',
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Boys Height by Age'
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Age (years)'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Height (cm)'
+              }
+            }
+          }
+        }
+      });
+
+      // Girls Height Chart
+      new Chart(document.getElementById('girlsHeightChart'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Giantism',
+              data: girlsData.map(d => d.height.more_than.giantism),
+              borderColor: 'rgb(255, 99, 132)',
+              fill: false
+            },
+            {
+              label: 'Tallness',
+              data: girlsData.map(d => d.height.more_than.tallness),
+              borderColor: 'rgb(255, 159, 64)',
+              fill: false
+            },
+            {
+              label: 'Shortness (1st degree)',
+              data: girlsData.map(d => d.height.less_than.shortness_first_degree),
+              borderColor: 'rgb(75, 192, 192)',
+              fill: false
+            },
+            {
+              label: 'Shortness',
+              data: girlsData.map(d => d.height.less_than.shortness),
+              borderColor: 'rgb(54, 162, 235)',
+              fill: false
+            },
+            {
+              label: 'Severe Shortness',
+              data: girlsData.map(d => d.height.less_than.severe_shortness),
+              borderColor: 'rgb(153, 102, 255)',
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Girls Height by Age'
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Age (years)'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Height (cm)'
+              }
+            }
+          }
+        }
+      });
+    };
+    document.head.appendChild(script);
+  </script>
+</Layout>
