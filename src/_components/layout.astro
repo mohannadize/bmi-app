@@ -1,0 +1,74 @@
+---
+import PwaInstall from "./pwa-install.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  url?: string;
+  keywords?: string[];
+}
+
+const {
+  title = "BMI Calculator",
+  description = "",
+  image,
+  url,
+  keywords = [],
+}: Props = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&family=Lora:ital,wght@0,400..700;1,400..700&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="shortcut icon" type="image/png" href="/icons/icon-192.png" />
+    <meta name="application-name" content="BMI Calculator" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#ffffff" />
+  </head>
+  <body dir="rtl">
+    <slot />
+    <div dir="ltr">
+      <PwaInstall
+        name="حساب الكتلة العضلية"
+        description="حاسبة مؤشر كتلة الجسم (BMI) تساعدك في حساب وتتبع مؤشر كتلة جسمك بسهولة ودقة. أداة مفيدة لمراقبة صحتك ولياقتك البدنية"
+        installDescription="قم بتثبيت البرنامج لحساب الكتلة العضلية"
+      />
+    </div>
+    <script is:inline>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js");
+      }
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    /* --accent-color: #e2cd74; */
+    font-family: "Rubik", sans-serif;
+    font-size: 20px;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+</style>

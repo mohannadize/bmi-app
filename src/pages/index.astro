@@ -1,16 +1,9 @@
 ---
-
+import Layout from "@/_components/layout.astro";
+import BMIApp from "@/_components/react/BMIApp";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout>
+  <h1 class="font-bold my-4 mx-4">حساب الكتلة</h1>
+  <BMIApp client:load />
+</Layout>

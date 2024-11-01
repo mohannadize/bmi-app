@@ -1,0 +1,58 @@
+---
+interface Props {
+  manualApple?: boolean;
+  manualChrome?: boolean;
+  disableChrome?: boolean;
+  disableClose?: boolean;
+  useLocalStorage?: boolean;
+  installDescription?: string;
+  disableInstallDescription?: boolean;
+  disableScreenshots?: boolean;
+  disableScreenshotsApple?: boolean;
+  disableScreenshotsChrome?: boolean;
+  manifestUrl?: string;
+  name?: string;
+  description?: string;
+  icon?: string;
+}
+
+const {
+  manualApple,
+  manualChrome,
+  disableChrome,
+  disableClose,
+  useLocalStorage,
+  installDescription,
+  disableInstallDescription,
+  disableScreenshots,
+  disableScreenshotsApple,
+  disableScreenshotsChrome,
+  manifestUrl,
+  name,
+  description,
+  icon,
+} = Astro.props;
+---
+
+<pwa-install
+  manual-apple={manualApple ? "true" : null}
+  manual-chrome={manualChrome ? "true" : null}
+  disable-chrome={disableChrome ? "true" : null}
+  disable-close={disableClose ? "true" : null}
+  use-local-storage={useLocalStorage ? "true" : null}
+  install-description={installDescription}
+  disable-install-description={disableInstallDescription ? "true" : null}
+  disable-screenshots={disableScreenshots ? "true" : null}
+  disable-screenshots-apple={disableScreenshotsApple ? "true" : null}
+  disable-screenshots-chrome={disableScreenshotsChrome ? "true" : null}
+  manifest-url={manifestUrl}
+  name={name}
+  description={description}
+  icon={icon}
+>
+</pwa-install>
+
+<script>
+  // Import the component
+  import '@khmyznikov/pwa-install';
+</script>
