@@ -75,7 +75,9 @@ function BMIApp() {
           <div className="col-span-3 relative h-[80px]">
             <Input
               label="الهوية"
-              type="number"
+              type="tel"
+              pattern="[0-9]*"
+              noValidate
               value={state.id}
               onChange={(value) => onChange("id", value.toString())}
             />
@@ -83,7 +85,9 @@ function BMIApp() {
           <div className="col-span-3 relative h-[80px]">
             <Input
               label="العمر"
-              type="number"
+              type="tel"
+              pattern="[0-9]*"
+              noValidate
               value={state.age}
               onChange={(value) => onChange("age", value.toString())}
             />
@@ -97,7 +101,9 @@ function BMIApp() {
           <div className="col-span-2 relative h-[80px]">
             <Input
               label="الوزن"
-              type="number"
+              type="tel"
+              pattern="[0-9]*"
+              noValidate
               value={state.weight}
               onChange={(value) => onChange("weight", value.toString())}
             />
@@ -105,7 +111,9 @@ function BMIApp() {
           <div className="col-span-2 relative h-[80px]">
             <Input
               label="الطول"
-              type="number"
+              type="tel"
+              pattern="[0-9]*"
+              noValidate
               value={state.height}
               onChange={(value) => onChange("height", value.toString())}
             />
