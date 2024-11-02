@@ -36,6 +36,11 @@ function BMIApp() {
     gender: "male",
     id: "",
   });
+  const [age, setAge] = useState<string | "">("");
+
+  useEffect(() => {
+    setAge(Number(state.age) > 19 ? "19" : state.age);
+  }, [state.age]);
 
   const onChange = (key: keyof State, value: string) => {
     if (key === "id") {
@@ -119,12 +124,12 @@ function BMIApp() {
             />
           </div>
         </section>
-        {isClient && <Results bmi={bmi} state={state} />}
+        {isClient && <Results bmi={bmi} state={{...state, age}} />}
       </div>
       <div >
         <div className="w-[95%] mx-auto bg-gray-50 rounded-lg shadow-sm px-4 pb-4 pt-2 border border-gray-200 mt-4">
           <RefrencesComponent
-            age={Number(state.age)}
+            age={Number(age)}
             gender={state.gender === "male" ? "boy" : "girl"}
           />
         </div>
