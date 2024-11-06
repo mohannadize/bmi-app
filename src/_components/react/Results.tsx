@@ -85,7 +85,7 @@ export default function Results({
         <span
           className={`text-md font-bold ${result_string === "" ? "text-green-500" : "text-red-500"}`}
         >
-          {bmi && state.height ? result_string || "طبيعي" : ""}
+          {state.gender && bmi && state.height ? result_string || "طبيعي" : ""}
         </span>
       </div>
     </section>
