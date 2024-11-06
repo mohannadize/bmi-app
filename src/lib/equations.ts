@@ -1,14 +1,16 @@
 import { PolynomialRegression } from "ml-regression-polynomial";
 import data from "./data.json";
-const degree = 5; // setup the maximum degree of the polynomial
+const degree = 7; // setup the maximum degree of the polynomial
 
-// const regression = new PolynomialRegression(x, y, degree);
-// console.log(regression.predict(80)); // Apply the model to some x value. Prints 2.6.
-// console.log(regression.coefficients); // Prints the coefficients in increasing order of power (from 0 to degree).
-// console.log(regression.toString(3)); // Prints a human-readable version of the function.
-// console.log(regression.toLaTeX(3));
 
-export function bmiCheck(age: number, bmi: number, gender: "boy" | "girl") {
+export function bmiCheck(
+  age: number,
+  bmi: number,
+  gender: "male" | "female" | null
+) {
+  if (!age || !bmi || !gender) {
+    return "--";
+  }
   const obese = new PolynomialRegression(
     data.ages,
     data[gender].bmi.obese,
@@ -52,8 +54,11 @@ export function bmiCheck(age: number, bmi: number, gender: "boy" | "girl") {
 export function heightCheck(
   age: number,
   userHeight: number,
-  gender: "boy" | "girl"
+  gender: "male" | "female" | null
 ) {
+  if (!age || !userHeight || !gender) {
+    return "--";
+  }
   const height = userHeight - 3 < 0 ? userHeight * 100 : userHeight;
 
   const shortness = new PolynomialRegression(
@@ -105,32 +110,33 @@ export function heightCheck(
   return "normal";
 }
 
-export function getAgeReference(age: number, gender: "boy" | "girl") {
-  if (!age) {
+export function getAgeReference(age: number, gender: "male" | "female" | null) {
+  if (!age || !gender || age <= 2 || age >= 19) {
     return {
-      bmi: {
-        more_than: {
-          obese: null,
-          overweight: null,
-        },
-        less_than: {
-          thinness: null,
-          severe_thinness: null,
-        },
+    bmi: {
+      more_than: {
+        obese: 0,
+        overweight: 0,
       },
-      height: {
-        more_than: {
-          giantism: null,
-          tallness: null,
-        },
-        less_than: {
-          shortness_first_degree: null,
-          shortness: null,
-          severe_shortness: null,
-        },
+      less_than: {
+        thinness: 0,
+        severe_thinness: 0,
       },
-    };
+    },
+    height: {
+      more_than: {
+        giantism: 0,
+        tallness: 0,
+      },
+      less_than: {
+        shortness_first_degree: 0,
+        shortness: 0,
+        severe_shortness: 0,
+      },
+    },
+  };
   }
+
   const obese = new PolynomialRegression(
     data.ages,
     data[gender].bmi.obese,
@@ -205,7 +211,7 @@ export function getAgeReference(age: number, gender: "boy" | "girl") {
   return reference;
 }
 
-export function getRegressions(gender: "boy" | "girl") {
+export function getRegressions(gender: "male" | "female") {
   const shortness = new PolynomialRegression(
     data.ages,
     data[gender].height.shortness,
@@ -231,4 +237,72 @@ export function getRegressions(gender: "boy" | "girl") {
     data[gender].height.giantism,
     degree
   );
+}
+
+// Add this function to test regression accuracy
+export function testRegressionAccuracy(gender: "male" | "female") {
+  // Test all BMI regressions
+  const bmiCategories = ['obese', 'overweight', 'thinness', 'severe_thinness'] as const;
+  const heightCategories = ['shortness', 'severe_shortness', 'shortness_first_degree', 'tallness', 'giantism'] as const;
+
+  const summary = {
+    bmi: {} as Record<typeof bmiCategories[number], {meanError: number, accuracy: number}>,
+    height: {} as Record<typeof heightCategories[number], {meanError: number, accuracy: number}>
+  };
+
+  // Calculate BMI accuracies
+  bmiCategories.forEach(category => {
+    const regression = new PolynomialRegression(
+      data.ages,
+      data[gender].bmi[category],
+      degree
+    );
+
+    let totalPercentageError = 0;
+    const errors = data.ages.map((age, i) => {
+      const predicted = regression.predict(age);
+      const actual = data[gender].bmi[category][i];
+      const error = Math.abs(predicted - actual);
+      const percentageError = (error / actual) * 100;
+      totalPercentageError += percentageError;
+      return error;
+    });
+
+    const meanError = errors.reduce((sum, err) => sum + err, 0) / errors.length;
+    const averageAccuracy = 100 - (totalPercentageError / data.ages.length);
+    
+    summary.bmi[category] = {
+      meanError: Number(meanError.toFixed(4)),
+      accuracy: Number(averageAccuracy.toFixed(2))
+    };
+  });
+
+  // Calculate Height accuracies
+  heightCategories.forEach(category => {
+    const regression = new PolynomialRegression(
+      data.ages,
+      data[gender].height[category],
+      degree
+    );
+
+    let totalPercentageError = 0;
+    const errors = data.ages.map((age, i) => {
+      const predicted = regression.predict(age);
+      const actual = data[gender].height[category][i];
+      const error = Math.abs(predicted - actual);
+      const percentageError = (error / actual) * 100;
+      totalPercentageError += percentageError;
+      return error;
+    });
+
+    const meanError = errors.reduce((sum, err) => sum + err, 0) / errors.length;
+    const averageAccuracy = 100 - (totalPercentageError / data.ages.length);
+    
+    summary.height[category] = {
+      meanError: Number(meanError.toFixed(4)),
+      accuracy: Number(averageAccuracy.toFixed(2))
+    };
+  });
+
+  return summary;
 }

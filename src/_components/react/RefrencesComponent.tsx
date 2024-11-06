@@ -6,13 +6,13 @@ function RefrencesComponent({
   gender,
 }: {
   age: number;
-  gender: "boy" | "girl";
+  gender: "male" | "female" | null;
 }) {
   return (
     <section className="w-full mx-auto flex flex-col gap-2">
       <h2>الحدود المرجعية</h2>
       <div>
-        {Object.entries(getAgeReference(Number(age), gender)).map(
+        {getAgeReference(Number(age), gender) && Object.entries(getAgeReference(Number(age), gender)!).map(
           ([category, data]) => {
             const row = Object.entries(data).map(([sign, value], index) => {
               const compare = sign === "more_than" ? "اكثر" : "اقل";
@@ -26,7 +26,7 @@ function RefrencesComponent({
                     <span className="text-gray-500">
                       {dict[key as keyof typeof dict]}
                     </span>
-                    {value2 && (
+                    {value2 !== 0 && (
                       <span>
                         {compare} من {value2.toFixed(1)}
                       </span>

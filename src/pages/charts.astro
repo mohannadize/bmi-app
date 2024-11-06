@@ -1,12 +1,18 @@
 ---
 import Layout from "../_components/layout.astro";
-import { getAgeReference } from "../lib/equations";
+import { getAgeReference, testRegressionAccuracy } from "../lib/equations";
 
 // Generate data points for the charts
-const agePoints = Array.from({ length: 169 }, (_, i) => (i + 60) / 12); // 5 to 19 years in months
+const agePoints = Array.from({ length: 12 * 17 }, (_, i) => (i + 24) / 12); // 2 to 19 years in months
 
-const boysData = agePoints.map(age => getAgeReference(age, "boy"));
-const girlsData = agePoints.map(age => getAgeReference(age, "girl"));
+const boysData = agePoints.map(age => getAgeReference(age, "male"));
+const girlsData = agePoints.map(age => getAgeReference(age, "female"));
+
+// Replace the accuracy calculation section with this
+const boysAccuracy = testRegressionAccuracy('male');
+const girlsAccuracy = testRegressionAccuracy('female');
+
+// Update the accuracy display in the HTML section:
 ---
 
 <Layout title="Growth Charts">
@@ -18,24 +24,62 @@ const girlsData = agePoints.map(age => getAgeReference(age, "girl"));
       <div class="bg-white p-4 rounded-lg shadow">
         <h2 class="text-xl font-semibold mb-4">Boys BMI Chart</h2>
         <canvas id="boysBMIChart" class="w-full"></canvas>
+        <div class="mt-4 text-sm text-gray-600">
+          <p class="font-semibold">Mean Absolute Error:</p>
+          <ul class="list-disc pl-5">
+            <li>Obese: {boysAccuracy.bmi.obese.meanError} (Accuracy: {boysAccuracy.bmi.obese.accuracy}%)</li>
+            <li>Overweight: {boysAccuracy.bmi.overweight.meanError} (Accuracy: {boysAccuracy.bmi.overweight.accuracy}%)</li>
+            <li>Thinness: {boysAccuracy.bmi.thinness.meanError} (Accuracy: {boysAccuracy.bmi.thinness.accuracy}%)</li>
+            <li>Severe Thinness: {boysAccuracy.bmi.severe_thinness.meanError} (Accuracy: {boysAccuracy.bmi.severe_thinness.accuracy}%)</li>
+          </ul>
+        </div>
       </div>
 
       <!-- Girls BMI Chart -->
       <div class="bg-white p-4 rounded-lg shadow">
         <h2 class="text-xl font-semibold mb-4">Girls BMI Chart</h2>
         <canvas id="girlsBMIChart" class="w-full"></canvas>
+        <div class="mt-4 text-sm text-gray-600">
+          <p class="font-semibold">Mean Absolute Error:</p>
+          <ul class="list-disc pl-5">
+            <li>Obese: {girlsAccuracy.bmi.obese.meanError} (Accuracy: {girlsAccuracy.bmi.obese.accuracy}%)</li>
+            <li>Overweight: {girlsAccuracy.bmi.overweight.meanError} (Accuracy: {girlsAccuracy.bmi.overweight.accuracy}%)</li>
+            <li>Thinness: {girlsAccuracy.bmi.thinness.meanError} (Accuracy: {girlsAccuracy.bmi.thinness.accuracy}%)</li>
+            <li>Severe Thinness: {girlsAccuracy.bmi.severe_thinness.meanError} (Accuracy: {girlsAccuracy.bmi.severe_thinness.accuracy}%)</li>
+          </ul>
+        </div>
       </div>
 
       <!-- Boys Height Chart -->
       <div class="bg-white p-4 rounded-lg shadow">
         <h2 class="text-xl font-semibold mb-4">Boys Height Chart</h2>
         <canvas id="boysHeightChart" class="w-full"></canvas>
+        <div class="mt-4 text-sm text-gray-600">
+          <p class="font-semibold">Mean Absolute Error:</p>
+          <ul class="list-disc pl-5">
+            <li>Giantism: {boysAccuracy.height.giantism.meanError} (Accuracy: {boysAccuracy.height.giantism.accuracy}%)</li>
+            <li>Tallness: {boysAccuracy.height.tallness.meanError} (Accuracy: {boysAccuracy.height.tallness.accuracy}%)</li>
+            <li>Shortness (1st degree): {boysAccuracy.height.shortness_first_degree.meanError} (Accuracy: {boysAccuracy.height.shortness_first_degree.accuracy}%)</li>
+            <li>Shortness: {boysAccuracy.height.shortness.meanError} (Accuracy: {boysAccuracy.height.shortness.accuracy}%)</li>
+            <li>Severe Shortness: {boysAccuracy.height.severe_shortness.meanError} (Accuracy: {boysAccuracy.height.severe_shortness.accuracy}%)</li>
+          </ul>
+        </div>
       </div>
 
       <!-- Girls Height Chart -->
       <div class="bg-white p-4 rounded-lg shadow">
         <h2 class="text-xl font-semibold mb-4">Girls Height Chart</h2>
         <canvas id="girlsHeightChart" class="w-full"></canvas>
+        <div class="mt-4 text-sm text-gray-600">
+          <p class="font-semibold">Mean Absolute Error:</p>
+          <ul class="list-disc pl-5">
+            <li>Giantism: {girlsAccuracy.height.giantism.meanError} (Accuracy: {girlsAccuracy.height.giantism.accuracy}%)</li>
+            <li>Tallness: {girlsAccuracy.height.tallness.meanError} (Accuracy: {girlsAccuracy.height.tallness.accuracy}%)</li>
+            <li>Shortness (1st degree): {girlsAccuracy.height.shortness_first_degree.meanError} (Accuracy: {girlsAccuracy.height.shortness_first_degree.accuracy}%)</li>
+            <li>Shortness: {girlsAccuracy.height.shortness.meanError} (Accuracy: {girlsAccuracy.height.shortness.accuracy}%)</li>
+            <li>Severe Shortness: {girlsAccuracy.height.severe_shortness.meanError} (Accuracy: {girlsAccuracy.height.severe_shortness.accuracy}%)</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -46,11 +90,13 @@ const girlsData = agePoints.map(age => getAgeReference(age, "girl"));
     script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
     script.onload = () => {
       // Convert age points to years for labels
-      const labels = Array.from({ length: 169 }, (_, i) => (i / 12).toFixed(1));
+      const labels = Array.from({ length: 12 * 17 }, (_, i) => ((i + 24) / 12).toFixed(1));
       
       // Use the server-provided data
       const boysData = serverBoysData;
       const girlsData = serverGirlsData;
+
+      console.log(boysData);
 
       // Boys BMI Chart
       new Chart(document.getElementById('boysBMIChart'), {

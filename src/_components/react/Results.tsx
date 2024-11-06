@@ -1,6 +1,17 @@
 import { bmiCheck, heightCheck } from "@/lib/equations";
 import CountUp from "react-countup";
 import { dict, type State } from "./BMIApp";
+import { useEffect } from "react";
+import { useState } from "react";
+
+const positive_cases = new Set([
+  "obese",
+  "severe_shortness",
+  "shortness",
+  "thinness",
+  "severe_thinness",
+  "giantism",
+]);
 
 const cases_styling = {
   obese: "text-red-500",
@@ -15,6 +26,7 @@ const cases_styling = {
   normal: "text-green-500",
   height: "text-purple-500",
   bmi: "text-blue-500",
+  "--": "text-gray-500",
 };
 
 export default function Results({
@@ -24,46 +36,56 @@ export default function Results({
   bmi: number | undefined;
   state: State;
 }) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const getBMIStatus = () => {
-    return bmiCheck(
-      Number(state.age),
-      bmi ?? 0,
-      state.gender === "male" ? "boy" : "girl"
-    );
+    return bmiCheck(Number(state.age), bmi ?? 0, state.gender);
   };
 
   const getHeightStatus = () => {
-    return heightCheck(
-      Number(state.age),
-      Number(state.height),
-      state.gender === "male" ? "boy" : "girl"
-    );
+    return heightCheck(Number(state.age), Number(state.height), state.gender);
   };
 
+  const result: {
+    bmi: string | undefined;
+    height: string | undefined;
+  } = {
+    bmi: getBMIStatus(),
+    height: getHeightStatus(),
+  };
+
+  if (result.bmi && positive_cases.has(result.bmi)) {
+    result.bmi = dict[result.bmi as keyof typeof dict];
+  } else {
+    result.bmi = undefined;
+  }
+
+  if (result.height && positive_cases.has(result.height)) {
+    result.height = dict[result.height as keyof typeof dict];
+  } else {
+    result.height = undefined;
+  }
+
+  const result_string = Object.values(result).filter((value) => value !== undefined).join(" + ");
+
   return (
-    <section className="w-[95%] mx-auto grid grid-cols-3 gap-2 justify-center items-center md:gap-8">
-      <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
+    <section className="w-[95%] mx-auto grid grid-cols-3 gap-2 justify-center items-stretch md:gap-8">
+      <div className="flex flex-col items-center bg-gray-50 rounded-lg p-4">
         <span className="text-gray-600 text-sm mb-1">الكتلة</span>
         <span className={`text-xl font-bold ${cases_styling.bmi}`}>
-          <CountUp duration={0.3} decimals={2} end={bmi ?? 0} />
+          {isClient && <CountUp duration={0.3} decimals={2} end={bmi ?? 0} />}
         </span>
       </div>
-      <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
-        <span className="text-gray-600 text-sm mb-1">الحالة</span>
-        <span className={`text-md font-bold ${cases_styling[getBMIStatus()]}`}>
-          {Number(bmi) > 0 && Number(state.age) > 0
-            ? dict[getBMIStatus()]
-            : "--"}
-        </span>
-      </div>
-      <div className="flex flex-col items-center bg-gray-100 rounded-lg p-4">
-        <span className="text-gray-600 text-sm mb-1">الطول</span>
+      <div className="flex flex-col items-center bg-gray-50 rounded-lg p-4 col-span-2">
+        <span className="text-gray-600 text-sm mb-1">النتيجة</span>
         <span
-          className={`text-md font-bold ${cases_styling[getHeightStatus()]}`}
+          className={`text-md font-bold ${result_string === "" ? "text-green-500" : "text-red-500"}`}
         >
-          {Number(state.height) > 0 && Number(state.age) > 0
-            ? dict[getHeightStatus()]
-            : "--"}
+          {bmi && state.height ? result_string || "طبيعي" : ""}
         </span>
       </div>
     </section>
