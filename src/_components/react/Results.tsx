@@ -77,7 +77,7 @@ export default function Results({
       <div className="flex flex-col items-center bg-gray-50 rounded-lg p-4">
         <span className="text-gray-600 text-sm mb-1">الكتلة</span>
         <span className={`text-xl font-bold ${cases_styling.bmi}`}>
-          {isClient && <CountUp duration={0.3} decimals={2} end={bmi ?? 0} />}
+          {isClient && <CountUp duration={0.3} decimals={2} end={(state.gender && state.age && bmi) ? bmi : 0} />}
         </span>
       </div>
       <div className="flex flex-col items-center bg-gray-50 rounded-lg p-4 col-span-2">
@@ -85,7 +85,7 @@ export default function Results({
         <span
           className={`text-md font-bold ${result_string === "" ? "text-green-500" : "text-red-500"}`}
         >
-          {state.gender && bmi && state.height ? result_string || "طبيعي" : ""}
+          {state.gender && bmi && state.age ? result_string || "طبيعي" : ""}
         </span>
       </div>
     </section>
