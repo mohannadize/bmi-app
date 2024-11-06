@@ -66,6 +66,7 @@ function BMIApp() {
           age: "",
           ageMonths: "",
           height: "",
+          gender: null,
           weight: "",
         };
       });
