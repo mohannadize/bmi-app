@@ -165,7 +165,7 @@ function BMIApp() {
               <Input
                 label="الوزن"
                 type="tel"
-                pattern="[0-9]*"
+                pattern="[0-9\.]*"
                 noValidate
                 value={state.weight}
                 onChange={(value) => onChange("weight", value.toString())}
@@ -175,7 +175,7 @@ function BMIApp() {
               <Input
                 label="الطول"
                 type="tel"
-                pattern="[0-9]*"
+                pattern="[0-9\.]*"
                 noValidate
                 value={state.height}
                 onChange={(value) => onChange("height", value.toString())}
