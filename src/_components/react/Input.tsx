@@ -50,7 +50,8 @@ function fixNumbers(value: string) {
     "٧": "7",
     "٨": "8",
     "٩": "9",
-    "٠": "0"
+    "٠": "0",
+    "٫": "."
   };
 
   return value.split("").map((char) => arNumbers[char] ?? char).join("");

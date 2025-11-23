@@ -128,7 +128,7 @@ function BMIApp() {
                 inputref={idRef}
                 label="اول 5 أرقام من الرقم القومي"
                 type="tel"
-                pattern="[0-9]*"
+                inputmode="numeric"
                 noValidate
                 autoFocus
                 value={state.id}
@@ -145,7 +145,7 @@ function BMIApp() {
               <Input
                 label="العمر"
                 type="tel"
-                pattern="[0-9]*"
+                inputmode="decimal"
                 noValidate
                 value={state.age}
                 onChange={(value) => onChange("age", value.toString())}
@@ -155,7 +155,7 @@ function BMIApp() {
               <Input
                 label="الشهور"
                 type="tel"
-                pattern="[0-9]*"
+                inputmode="decimal"
                 noValidate
                 value={state.ageMonths}
                 onChange={(value) => onChange("ageMonths", value.toString())}
@@ -164,8 +164,8 @@ function BMIApp() {
             <div className="col-span-6 relative h-[80px]">
               <Input
                 label="الوزن"
+                inputmode="decimal"
                 type="tel"
-                pattern="[0-9\.]*"
                 noValidate
                 value={state.weight}
                 onChange={(value) => onChange("weight", value.toString())}
@@ -174,8 +174,8 @@ function BMIApp() {
             <div className="col-span-6 relative h-[80px]">
               <Input
                 label="الطول"
+                inputmode="decimal"
                 type="tel"
-                pattern="[0-9\.]*"
                 noValidate
                 value={state.height}
                 onChange={(value) => onChange("height", value.toString())}
